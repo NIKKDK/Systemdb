@@ -1,0 +1,3 @@
+pymongo
+PyrogramMod
+TgCrypto

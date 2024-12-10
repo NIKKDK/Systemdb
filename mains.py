@@ -3,7 +3,7 @@ from pymongo import MongoClient
 
 # MongoDB setup
 client = MongoClient('mongodb+srv://bikash:bikash@bikash.3jkvhp7.mongodb.net/?retryWrites=true&w=majority')  # MongoDB URI
-db = client['bikash']  # Replace with your database name
+db = client['OwnerBgt']  # Replace with your database name
 users_collection = db['users']  # Replace with your collection name
 
 # Bot Configuration

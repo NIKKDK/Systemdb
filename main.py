@@ -12,8 +12,8 @@ BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
 AUTHORIZED_USERS = [7648939888, 987654321]  # Replace with authorized Telegram user IDs
 
 # MongoDB Configurations
-SOURCE_DB_URI = "mongodb+srv://source_user:password@source.mongodb.net/source_db"
-DEST_DB_URI = "mongodb+srv://dest_user:password@dest.mongodb.net/dest_db"
+SOURCE_DB_URI = "mongodb+srv://Bhojpuriya:bhojpuriya@cluster0.osrvhzy.mongodb.net/?retryWrites=true&w=majority"
+DEST_DB_URI = "mongodb+srv://public:abishnoimf@cluster0.rqk6ihd.mongodb.net/?retryWrites=true&w=majority"
 
 source_client = MongoClient(SOURCE_DB_URI)
 dest_client = MongoClient(DEST_DB_URI)

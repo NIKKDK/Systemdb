@@ -8,8 +8,8 @@ API_HASH = "d927c13beaaf5110f25c505b7c071273"  # Replace with your API Hash
 BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"  # Replace with your Bot Token
 
 # MongoDB Configuration
-MONGO_URI = "mongodb+srv://public:abishnoimf@cluster0.rqk6ihd.mongodb.net/?retryWrites=true&w=majority"  # Replace with your MongoDB URI
-DATABASE_NAME = "public"  # Replace with your database name
+MONGO_URI = "mongodb+srv://Bikash:Bikash@bikash.yl2nhcy.mongodb.net/?retryWrites=true&w=majority"  # Replace with your MongoDB URI
+DATABASE_NAME = "Bikash"  # Replace with your database name
 
 # Initialize the Telegram bot
 app = Client("mongoDbCheckerBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)

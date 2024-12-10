@@ -36,7 +36,7 @@ async def transfer_data(client, message):
 
     try:
         # Parse command arguments
-        args = message.text.split(maxsplit=2)  # Split into at most 3 parts: command, source, dest
+        args = message.text.split(maxsplit=2)
         if len(args) != 3:
             await message.reply("Usage: /transfer <source_collection> <dest_collection>")
             return
@@ -44,9 +44,12 @@ async def transfer_data(client, message):
         source_collection_name = args[1]
         dest_collection_name = args[2]
 
-        # Access source and destination databases
-        source_db = source_client.get_database()
-        dest_db = dest_client.get_database()
+        # Specify database names explicitly
+        source_db_name = "source_db_name"  # Replace with your source database name
+        dest_db_name = "dest_db_name"  # Replace with your destination database name
+
+        source_db = source_client[source_db_name]
+        dest_db = dest_client[dest_db_name]
 
         source_collection = source_db[source_collection_name]
         dest_collection = dest_db[dest_collection_name]

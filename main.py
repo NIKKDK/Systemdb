@@ -2,14 +2,6 @@ from pymongo import MongoClient, errors
 from tqdm import tqdm
 import logging
 
-
-# Bot Configurations
-API_ID = "12380656"
-API_HASH = "d927c13beaaf5110f25c505b7c071273"
-BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
-AUTHORIZED_USERS = [7648939888, 987654321]  # Replace with authorized Telegram user IDs
-
-
 #logging setup
 logging.basicConfig(
     level=logging.INFO,
@@ -21,7 +13,7 @@ logging.basicConfig(
 )
 
 # MongoDB configurations
-OLD_DB_URI = "mongodb+srv://Bikash:Bikash@bikash.yl2nhcy.mongodb.net/?retryWrites=true&w=majority"
+OLD_DB_URI = "mongodb+srv://Bhojpuriya:bhojpuriya@cluster0.osrvhzy.mongodb.net/?retryWrites=true&w=majority"
 NEW_DB_URI = "mongodb+srv://public:abishnoimf@cluster0.rqk6ihd.mongodb.net/?retryWrites=true&w=majority"
 
 # List specific collections to transfer (leave empty to transfer all collections)
@@ -86,7 +78,7 @@ def transfer_database(old_db_name, new_db_name):
 
 if __name__ == "__main__":
     # Specify the old and new database names
-    OLD_DB_NAME = "Bikash"
+    OLD_DB_NAME = "Bhojpuriya"
     NEW_DB_NAME = "public"
 
     # Execute the transfer

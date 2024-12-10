@@ -86,8 +86,8 @@ def transfer_database(old_db_name, new_db_name):
 
 if __name__ == "__main__":
     # Specify the old and new database names
-    OLD_DB_NAME = "old_database_name"
-    NEW_DB_NAME = "new_database_name"
+    OLD_DB_NAME = "Bikash"
+    NEW_DB_NAME = "public"
 
     # Execute the transfer
     try:

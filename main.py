@@ -13,7 +13,7 @@ logging.basicConfig(
 )
 
 # MongoDB configurations
-OLD_DB_URI = "mongodb+srv://Bhojpuriya:bhojpuriya@cluster0.osrvhzy.mongodb.net/?retryWrites=true&w=majority"
+OLD_DB_URI = "mongodb+srv://Bikash:Bikash@bikash.yl2nhcy.mongodb.net/?retryWrites=true&w=majority"
 NEW_DB_URI = "mongodb+srv://public:abishnoimf@cluster0.rqk6ihd.mongodb.net/?retryWrites=true&w=majority"
 
 # List specific collections to transfer (leave empty to transfer all collections)
@@ -78,7 +78,7 @@ def transfer_database(old_db_name, new_db_name):
 
 if __name__ == "__main__":
     # Specify the old and new database names
-    OLD_DB_NAME = "Bhojpuriya"
+    OLD_DB_NAME = "Bikash"
     NEW_DB_NAME = "public"
 
     # Execute the transfer

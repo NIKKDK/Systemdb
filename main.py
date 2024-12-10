@@ -36,7 +36,7 @@ async def transfer_data(client, message):
 
     try:
         # Parse command arguments
-        args = message.text.split()
+        args = message.text.split(maxsplit=2)  # Split into at most 3 parts: command, source, dest
         if len(args) != 3:
             await message.reply("Usage: /transfer <source_collection> <dest_collection>")
             return
@@ -44,16 +44,17 @@ async def transfer_data(client, message):
         source_collection_name = args[1]
         dest_collection_name = args[2]
 
+        # Access source and destination databases
         source_db = source_client.get_database()
         dest_db = dest_client.get_database()
 
         source_collection = source_db[source_collection_name]
         dest_collection = dest_db[dest_collection_name]
 
-        # Transfer data securely
+        # Fetch documents from source collection
         documents = list(source_collection.find())
         if not documents:
-            await message.reply(f"No data found in the source collection: {source_collection_name}")
+            await message.reply(f"No data found in the source collection: `{source_collection_name}`")
             return
 
         # Insert documents into destination collection
@@ -65,20 +66,6 @@ async def transfer_data(client, message):
 
     except Exception as e:
         logging.error(f"Error during transfer: {e}")
-        await message.reply(f"An error occurred: {e}")
-
-@app.on_message(filters.command("collections") & filters.private)
-async def list_collections(client, message):
-    if message.from_user.id not in AUTHORIZED_USERS:
-        await message.reply("You are not authorized to use this bot.")
-        return
-
-    try:
-        source_db = source_client.get_database()
-        collections = source_db.list_collection_names()
-        await message.reply(f"Available collections in source DB:\n{', '.join(collections)}")
-    except Exception as e:
-        logging.error(f"Error fetching collections: {e}")
         await message.reply(f"An error occurred: {e}")
 
 if __name__ == "__main__":

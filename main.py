@@ -1,7 +1,7 @@
 import asyncio
 import time
 import psutil
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.enums import ParseMode
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -13,6 +13,7 @@ loop = asyncio.get_event_loop()
 
 async def main():
       await app.start()
+      await idle() 
 
 # Telegram Bot Credentials
 API_ID = "12380656"

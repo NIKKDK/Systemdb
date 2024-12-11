@@ -1,14 +1,34 @@
 import asyncio
 import json
 import os
+import logging
 from datetime import datetime
-
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
-from pyrogram import filters
+from pyrogram import filters, Client
 from pyrogram.errors import FloodWait
+from config import *
 
+
+# Logging setup
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Bot Configurations
+API_ID = "12380656"
+API_HASH = "d927c13beaaf5110f25c505b7c071273"
+BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
+AUTHORIZED_USERS = [7648939888, 987654321]  # Replace with authorized Telegram user IDs
+
+
+
+# Create the Pyrogram Client
+app = Client(
+    name="testing",
+    bot_token=BOT_TOKEN,
+    api_id=API_ID,
+    api_hash=API_HASH, 
+)
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -205,3 +225,7 @@ async def delete_all_databases(client, message):
         await mystic.edit_text("All user-defined databases have been deleted successfully.")
     except Exception as e:
         await mystic.edit_text(f"Error: {e}")        
+
+
+if __name__ == "__main__":
+    app.run()

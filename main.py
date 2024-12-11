@@ -37,12 +37,12 @@ user_data = {}
 # Start time for bot uptime tracking
 bot_start_time = time.time()
 
+
 async def main():
     cpu_usage, memory_usage = await get_system_info()
-      await get_uptime()
-      await app.start()
-      await idle() 
-
+    await get_uptime()
+    await app.start()
+    await idle() 
 
 # Helper function to format bot uptime
 async def get_uptime():

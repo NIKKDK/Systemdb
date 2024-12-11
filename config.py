@@ -3,6 +3,7 @@ import re
 import sys
 from os import getenv
 from dotenv import load_dotenv
+from pyrogram import filters, Client
 
 # Load environment variables from .env file
 load_dotenv()

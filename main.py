@@ -11,7 +11,7 @@ from pyrogram.enums import ParseMode
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
-
+from config import *
 loop = asyncio.get_event_loop()
 
 

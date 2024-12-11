@@ -239,6 +239,6 @@ async def delete_all_databases(client, message):
 
 if __name__ == "__main__":
     print("Bot is starting...")
-    loop.run_until_complete(init())
+    loop.run_until_complete()
     
     

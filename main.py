@@ -169,7 +169,7 @@ async def transfer_data(client, message):
 
 @app.on_message(filters.command("status"))
 async def status(client, message):
-    await message.reply_text("**Bot is running and ready to transfer data.**", parse_mode="markdown")
+    await message.reply_text("**Bot is running and ready to transfer data.**", parse_mode=ParseMode.MARKDOWN)
 
 @app.on_message(filters.command("ping"))
 async def ping(client, message):
@@ -190,7 +190,7 @@ async def ping(client, message):
         await message.reply_text(response, parse_mode=ParseMode.MARKDOWN)
 
     except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode="markdown")
+        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
 
 if __name__ == "__main__":
     print("Bot is starting...")

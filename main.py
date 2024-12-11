@@ -3,6 +3,7 @@ import psutil
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Telegram Bot Credentials
 API_ID = "12380656"
@@ -142,7 +143,7 @@ async def transfer_data(client, message):
         old_client = MongoClient(old_uri)
         new_client = MongoClient(new_uri)
 
-        await message.reply_text("**Starting transfer of all databases...**", parse_mode="markdown")
+        await message.reply_text("**Starting transfer of all databases...**", parse_mode=ParseMode.MARKDOWN)
 
         # Get list of databases
         old_db_list = old_client.list_database_names()
@@ -200,7 +201,37 @@ async def ping(client, message):
 
     except Exception as e:
         await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
+        await app.start() 
+        
+
+
+
+
+@app.on_message(filters.command("deletedball"))
+async def delete_all_databases(client, message):
+    
+
+    if len(message.command) < 2:
+        return await message.reply_text("Please provide a MongoDB URL as an argument.")
+
+    mongo_url = message.command[1].strip()
+    mystic = await message.reply_text("Connecting to MongoDB...")
+
+    try:
+        client = AsyncIOMotorClient(mongo_url)
+        databases = await client.list_database_names()
+        databases = [db for db in databases if db not in ["local", "admin"]]
+
+        if not databases:
+            return await mystic.edit_text("No user-defined databases to delete.")
+
+        for db_name in databases:
+            await client.drop_database(db_name)
+
+        await mystic.edit_text("All user-defined databases have been deleted successfully.")
+    except Exception as e:
+        await mystic.edit_text(f"Error: {e}")        
 
 if __name__ == "__main__":
     print("Bot is starting...")
-    app.run()
+

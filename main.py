@@ -119,9 +119,9 @@ async def list_all_dbs(client, message):
                 parse_mode=ParseMode.MARKDOWN
             )
         else:
-            await message.reply_text("**❌ No databases found in the old MongoDB instance.**", parse_mode="markdown")
+            await message.reply_text("**❌ No databases found in the old MongoDB instance.**", parse_mode=ParseMode.MARKDOWN)
     except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode="markdown")
+        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
     finally:
         if old_client:
             old_client.close()  # Ensure this is only called if old_client was created

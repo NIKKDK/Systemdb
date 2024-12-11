@@ -72,7 +72,7 @@ async def set_old(client, message):
     except Exception as e:
         await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
 
-@app.on_message(filters.command("setnew") & filters.private)
+@app.on_message(filters.command("setnew"))
 async def set_new(client, message):
     try:
         if len(message.command) < 2:
@@ -101,7 +101,7 @@ async def list_all_dbs(client, message):
     try:
         user_id = message.from_user.id
         if user_id not in user_data or "old_uri" not in user_data[user_id]:
-            await message.reply_text("**❌ Please set the old MongoDB URI first using `/set_old`.**", parse_mode=ParseMode.MARKDOWN)
+            await message.reply_text("**❌ Please set the old MongoDB URI first using `/setold`.**", parse_mode=ParseMode.MARKDOWN)
             return
 
         old_uri = user_data[user_id]["old_uri"]

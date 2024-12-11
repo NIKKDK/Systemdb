@@ -57,11 +57,11 @@ async def start(client, message):
         "/setold `<old_mongo_uri>` - Set old MongoDB URI\n"
         "/setnew `<new_mongo_uri>` - Set new MongoDB URI\n"
         "/setold `<old_mongo_uri>` - To check how many databases this mongo has\n"
-        "/transfer - Start transferring data\n"
-        "/listalldb - List all databases in the old MongoDB instance\n"
-        "/status - Check bot status\n"
-        "/ping - Get system info and bot uptime\n",
-        "/clean - This cmd can delete all your entire data which is stored in your mongo db database\n", 
+        "/transfer `<transfer_data>` - Start transferring data\n"
+        "/listalldb `<see_data>` - List all databases in the old MongoDB instance\n"
+        "/status `<status_process>` - Check bot status\n"
+        "/ping `<uptime_bot>` - Get system info and bot uptime\n",
+        "/clean `<delete_data>` - This cmd can delete all your entire data which is stored in your mongo db database\n", 
         parse_mode=ParseMode.MARKDOWN
     )
 

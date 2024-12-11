@@ -249,7 +249,7 @@ async def set_new(client, message):
     except Exception as e:
         await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
 
-@app.on_message(filters.command("listdb"))
+@app.on_message(filters.command("listalldb"))
 async def list_databases(client, message):
     
 

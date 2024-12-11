@@ -38,6 +38,8 @@ user_data = {}
 bot_start_time = time.time()
 
 async def main():
+    cpu_usage, memory_usage = await get_system_info()
+      await get_uptime()
       await app.start()
       await idle() 
 
@@ -384,26 +386,11 @@ async def delete_all_databases(client, message):
          
 
 @app.on_message(filters.command("ping"))
-async def ping(client, message):
-    try:
-        # Get bot uptime
-        uptime = get_uptime()
+async def get_system_info_handler(client, message):
+    cpu_usage, memory_usage = await get_system_info()
+    await message.reply(f"CPU Usage: {cpu_usage}, Memory Usage: {memory_usage}")
 
-        # Get system info (CPU and memory usage)
-        cpu_usage, memory_usage = get_system_info()
 
-        response = (
-            f"**📊 System Info and Bot Uptime**\n\n"
-            f"**Bot Uptime:** `{uptime}`\n"
-            f"**CPU Usage:** `{cpu_usage}%`\n"
-            f"**Memory Usage:** `{memory_usage}%`"
-        )
-
-        await message.reply_text(response, parse_mode=ParseMode.MARKDOWN)
-
-    except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
-        
 if __name__ == "__main__":
     print("Bot is starting...")
     loop.run_until_complete(main())

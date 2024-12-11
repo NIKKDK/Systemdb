@@ -5,6 +5,9 @@ from pyrogram.enums import ParseMode
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
+
+loop = asyncio.get_event_loop()
+
 # Telegram Bot Credentials
 API_ID = "12380656"
 API_HASH = "d927c13beaaf5110f25c505b7c071273"
@@ -201,7 +204,7 @@ async def ping(client, message):
 
     except Exception as e:
         await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
-        await app.start() 
+        
         
 
 
@@ -231,7 +234,10 @@ async def delete_all_databases(client, message):
         await mystic.edit_text("All user-defined databases have been deleted successfully.")
     except Exception as e:
         await mystic.edit_text(f"Error: {e}")        
+        await app.start() 
 
 if __name__ == "__main__":
     print("Bot is starting...")
-
+    loop.run_until_complete(init())
+    
+    

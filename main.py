@@ -199,7 +199,6 @@ async def start(client, message):
         "**Commands:**\n"
         "/setold `<old_mongo_uri>` - Set old MongoDB URI\n"
         "/setnew `<new_mongo_uri>` - Set new MongoDB URI\n"
-        "/setold `<old_mongo_uri>` - To check how many databases this mongo has\n"
         "/transfer `<transfer_data>` - Start transferring data\n"
         "/listalldb `<see_data>` - List all databases in the old MongoDB instance\n"
         "/status `<status_process>` - Check bot status\n"
@@ -250,36 +249,58 @@ async def set_new(client, message):
     except Exception as e:
         await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
 
-@app.on_message(filters.command("listalldb"))
-async def list_all_dbs(client, message):
-    old_client = None  # Initialize old_client here
+@app.on_message(filters.command("listdb"))
+async def list_databases(client, message):
+    
+
+    if len(message.command) < 2:
+        return await message.reply_text("Please provide a MongoDB URL as an argument.")
+
+    mongo_url = message.command[1].strip()
+    mystic = await message.reply_text("Fetching database list...")
+
     try:
-        user_id = message.from_user.id
-        if user_id not in user_data or "old_uri" not in user_data[user_id]:
-            await message.reply_text("**❌ Please set the old MongoDB URI first using `/setold`.**", parse_mode=ParseMode.MARKDOWN)
-            return
+        client = AsyncIOMotorClient(mongo_url)
+        databases = await client.list_database_names()
+        databases = [db for db in databases if db not in ["local", "admin"]]
 
-        old_uri = user_data[user_id]["old_uri"]
-
-        # Connect to MongoDB
-        old_client = MongoClient(old_uri)
-        db_list = old_client.list_database_names()
-
-        # Filter out system databases
-        db_list = [db for db in db_list if db not in ["admin", "config", "local"]]
-
-        if db_list:
-            await message.reply_text(
-                "**✅ Databases in the old MongoDB instance:**\n\n" + "\n".join(f"- `{db}`" for db in db_list),
-                parse_mode=ParseMode.MARKDOWN
-            )
+        if not databases:
+            await mystic.edit_text("No user-defined databases found.")
         else:
-            await message.reply_text("**❌ No databases found in the old MongoDB instance.**", parse_mode=ParseMode.MARKDOWN)
+            db_list = "\n".join(f"- {db}" for db in databases)
+            await mystic.edit_text(f"Databases in the MongoDB URL:\n\n{db_list}")
     except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
-    finally:
-        if old_client:
-            old_client.close()  # Ensure this is only called if old_client was created
+        await mystic.edit_text(f"Error while connecting to MongoDB: {e}")
+        
+from motor.motor_asyncio import AsyncIOMotorClient
+from pyrogram import filters
+
+
+
+@app.on_message(filters.command("clean"))
+async def delete_all_databases(client, message):
+    
+
+    if len(message.command) < 2:
+        return await message.reply_text("Please provide a MongoDB URL as an argument.")
+
+    mongo_url = message.command[1].strip()
+    mystic = await message.reply_text("Connecting to MongoDB...")
+
+    try:
+        client = AsyncIOMotorClient(mongo_url)
+        databases = await client.list_database_names()
+        databases = [db for db in databases if db not in ["local", "admin"]]
+
+        if not databases:
+            return await mystic.edit_text("No user-defined databases to delete.")
+
+        for db_name in databases:
+            await client.drop_database(db_name)
+
+        await mystic.edit_text("All user-defined databases have been deleted successfully.")
+    except Exception as e:
+        await mystic.edit_text(f"Error: {e}")  # Ensure this is only called if old_client was created
 
 
 @app.on_message(filters.command("transfer"))

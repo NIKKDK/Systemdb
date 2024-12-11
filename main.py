@@ -41,6 +41,21 @@ async def main():
       await app.start()
       await idle() 
 
+
+# Helper function to format bot uptime
+async def get_uptime():
+    uptime_seconds = int(time.time() - bot_start_time)
+    hours, remainder = divmod(uptime_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours}h {minutes}m {seconds}s"
+
+# Helper function to get system info
+async def get_system_info():
+    # Get system CPU usage and memory info
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory = psutil.virtual_memory()
+    return cpu_usage, memory.percent
+
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, ObjectId):
@@ -173,23 +188,9 @@ async def import_database(client, message):
             await mystic.edit_text(f"Database `{db_name}` imported successfully.")
     except Exception as e:
         await mystic.edit_text(f"Error during import: {e}. Rolling back changes.")
-
     os.remove(file_path)
     
 
-# Helper function to format bot uptime
-async def get_uptime():
-    uptime_seconds = int(time.time() - bot_start_time)
-    hours, remainder = divmod(uptime_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return f"{hours}h {minutes}m {seconds}s"
-
-# Helper function to get system info
-async def get_system_info():
-    # Get system CPU usage and memory info
-    cpu_usage = psutil.cpu_percent(interval=1)
-    memory = psutil.virtual_memory()
-    return cpu_usage, memory.percent
 
 @app.on_message(filters.command("start"))
 async def start(client, message):
@@ -355,31 +356,6 @@ async def transfer_data(client, message):
 async def status(client, message):
     await message.reply_text("**Bot is running and ready to transfer data.**", parse_mode=ParseMode.MARKDOWN)
 
-@app.on_message(filters.command("ping"))
-async def ping(client, message):
-    try:
-        # Get bot uptime
-        uptime = get_uptime()
-
-        # Get system info (CPU and memory usage)
-        cpu_usage, memory_usage = get_system_info()
-
-        response = (
-            f"**📊 System Info and Bot Uptime**\n\n"
-            f"**Bot Uptime:** `{uptime}`\n"
-            f"**CPU Usage:** `{cpu_usage}%`\n"
-            f"**Memory Usage:** `{memory_usage}%`"
-        )
-
-        await message.reply_text(response, parse_mode=ParseMode.MARKDOWN)
-
-    except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
-        
-        
-
-
-
 
 @app.on_message(filters.command("clean"))
 async def delete_all_databases(client, message):
@@ -407,6 +383,27 @@ async def delete_all_databases(client, message):
         await mystic.edit_text(f"Error: {e}")        
          
 
+@app.on_message(filters.command("ping"))
+async def ping(client, message):
+    try:
+        # Get bot uptime
+        uptime = get_uptime()
+
+        # Get system info (CPU and memory usage)
+        cpu_usage, memory_usage = get_system_info()
+
+        response = (
+            f"**📊 System Info and Bot Uptime**\n\n"
+            f"**Bot Uptime:** `{uptime}`\n"
+            f"**CPU Usage:** `{cpu_usage}%`\n"
+            f"**Memory Usage:** `{memory_usage}%`"
+        )
+
+        await message.reply_text(response, parse_mode=ParseMode.MARKDOWN)
+
+    except Exception as e:
+        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
+        
 if __name__ == "__main__":
     print("Bot is starting...")
     loop.run_until_complete(main())

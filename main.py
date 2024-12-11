@@ -61,6 +61,7 @@ async def start(client, message):
         "/listalldb - List all databases in the old MongoDB instance\n"
         "/status - Check bot status\n"
         "/ping - Get system info and bot uptime",
+        "/clean - This cmd can delete all your entire data which is stored in your mongo db database", 
         parse_mode=ParseMode.MARKDOWN
     )
 
@@ -217,7 +218,7 @@ async def ping(client, message):
 
 
 
-@app.on_message(filters.command("deletedball"))
+@app.on_message(filters.command("clean"))
 async def delete_all_databases(client, message):
     
 

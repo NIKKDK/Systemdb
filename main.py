@@ -386,9 +386,12 @@ async def delete_all_databases(client, message):
          
 
 @app.on_message(filters.command("ping"))
-async def get_system_info_handler(client, message):
-    cpu_usage, memory_usage = await get_system_info()
-    await message.reply(f"CPU Usage: {cpu_usage}, Memory Usage: {memory_usage}")
+async def check_sping(client, message):
+    start = datetime.now()
+    end = datetime.now()
+    ms = (end - start).microseconds / 1000
+    m = await message.reply_text("**🤖 Ping...!!**")
+    await m.edit(f"**🤖 Pinged...!!\nLatency:** `{ms}` ms")
 
 
 if __name__ == "__main__":

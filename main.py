@@ -19,6 +19,8 @@ API_ID = "12380656"
 API_HASH = "d927c13beaaf5110f25c505b7c071273"
 BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
 AUTHORIZED_USERS = [7648939888, 987654321]  # Replace with authorized Telegram user IDs
+# Database to save your chats and stats... Get MongoDB:-  https://telegra.ph/How-To-get-Mongodb-URI-04-06
+MONGO_DB_URI = "mongodb+srv://Murali:MuraliNew4567@murali.8lavq.mongodb.net/?retryWrites=true&w=majority&appName=Murali"
 
 
 

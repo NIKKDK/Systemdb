@@ -1,5 +1,4 @@
 pymongo
-PyrogramMod
-TgCrypto
-bson
+pyrogrammod
+tgcrypto
 motor

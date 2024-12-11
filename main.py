@@ -30,14 +30,14 @@ user_data = {}
 bot_start_time = time.time()
 
 # Helper function to format bot uptime
-def get_uptime():
+async def get_uptime():
     uptime_seconds = int(time.time() - bot_start_time)
     hours, remainder = divmod(uptime_seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{hours}h {minutes}m {seconds}s"
 
 # Helper function to get system info
-def get_system_info():
+async def get_system_info():
     # Get system CPU usage and memory info
     cpu_usage = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()

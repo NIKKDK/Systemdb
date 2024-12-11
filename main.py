@@ -12,13 +12,10 @@ from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
 from config import *
+
+
 loop = asyncio.get_event_loop()
 
-
-
-async def main():
-      await app.start()
-      await idle() 
 
 # Telegram Bot Credentials
 API_ID = "12380656"
@@ -40,7 +37,9 @@ user_data = {}
 # Start time for bot uptime tracking
 bot_start_time = time.time()
 
-
+async def main():
+      await app.start()
+      await idle() 
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -411,5 +410,3 @@ async def delete_all_databases(client, message):
 if __name__ == "__main__":
     print("Bot is starting...")
     loop.run_until_complete(main())
-    
-    

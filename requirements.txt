@@ -1,6 +1,5 @@
 pymongo
 PyrogramMod
 TgCrypto
-tqdm
 bson
 motor

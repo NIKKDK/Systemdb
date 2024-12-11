@@ -101,7 +101,7 @@ async def list_all_dbs(client, message):
     try:
         user_id = message.from_user.id
         if user_id not in user_data or "old_uri" not in user_data[user_id]:
-            await message.reply_text("**❌ Please set the old MongoDB URI first using `/set_old`.**", parse_mode="markdown")
+            await message.reply_text("**❌ Please set the old MongoDB URI first using `/set_old`.**", parse_mode=ParseMode.MARKDOWN)
             return
 
         old_uri = user_data[user_id]["old_uri"]

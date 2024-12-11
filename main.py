@@ -116,7 +116,7 @@ async def list_all_dbs(client, message):
         if db_list:
             await message.reply_text(
                 "**✅ Databases in the old MongoDB instance:**\n\n" + "\n".join(f"- `{db}`" for db in db_list),
-                parse_mode="markdown"
+                parse_mode=ParseMode.MARKDOWN"
             )
         else:
             await message.reply_text("**❌ No databases found in the old MongoDB instance.**", parse_mode="markdown")

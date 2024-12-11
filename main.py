@@ -229,5 +229,58 @@ async def delete_all_databases(client, message):
         await mystic.edit_text(f"Error: {e}")        
 
 
+
+from pyrogram import Client, filters
+from pymongo import MongoClient
+
+
+
+@app.on_message(filters.command("transfer"))
+async def transfer(_, message):
+    if len(message.command) != 3:
+        await message.reply_text("Usage: /transfer <mongo_url1> <mongo_url2>")
+        return
+
+    mongo_url1, mongo_url2 = message.command[1], message.command[2]
+
+    try:
+        
+        client1 = MongoClient(mongo_url1)
+        dbs1 = client1.list_database_names()
+        
+      
+        client2 = MongoClient(mongo_url2)
+
+        
+        for db_name in dbs1:
+            if db_name in ["admin", "local", "config"]: 
+                continue
+
+            db1 = client1[db_name]
+            db2 = client2[db_name]
+
+            
+            for collection_name in db1.list_collection_names():
+                collection1 = db1[collection_name]
+                collection2 = db2[collection_name]
+
+               
+                documents = list(collection1.find())
+                if documents:
+                  
+                    collection2.insert_many(documents)
+
+                
+                collection1.delete_many({})
+
+        await message.reply_text("Transfer complete!")
+    except Exception as e:
+        await message.reply_text(f"Error: {e}")
+    finally:
+        
+        client1.close()
+        client2.close()
+
+
 if __name__ == "__main__":
     app.run()

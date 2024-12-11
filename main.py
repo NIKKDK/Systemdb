@@ -62,7 +62,7 @@ async def start(client, message):
         "/status `<status_process>` - Check bot status\n"
         "/ping `<uptime_bot>` - Get system info and bot uptime\n",
         "/clean `<delete_data>` - This cmd can delete all your entire data which is stored in your mongo db database\n", 
-        parse_mode=ParseMode.MARKDOWN
+      #  parse_mode=ParseMode.MARKDOWN
     )
 
 @app.on_message(filters.command("setold"))

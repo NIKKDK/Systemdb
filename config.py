@@ -18,3 +18,10 @@ BOT_TOKEN = getenv("BOT_TOKEN")
 STRING_SESSION = getenv("STRING_SESSION", None)
 
 # You can add more configuration variables as needed
+
+# Your User ID.
+OWNER_ID = list(
+    map(int, getenv("OWNER_ID", "").split())
+)  # Input type must be interger
+
+BANNED_USERS = filters.user()

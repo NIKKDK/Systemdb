@@ -91,10 +91,11 @@ async def set_new(client, message):
 
 @app.on_message(filters.command("listalldb"))
 async def list_all_dbs(client, message):
+    old_client = None  # Initialize old_client here
     try:
         user_id = message.from_user.id
         if user_id not in user_data or "old_uri" not in user_data[user_id]:
-            await message.reply_text("**❌ Please set this MongoDB URI first using `/setold`.**", parse_mode=ParseMode.MARKDOWN)
+            await message.reply_text("**❌ Please set the old MongoDB URI first using `/set_old`.**", parse_mode="markdown")
             return
 
         old_uri = user_data[user_id]["old_uri"]
@@ -108,15 +109,17 @@ async def list_all_dbs(client, message):
 
         if db_list:
             await message.reply_text(
-                "**✅ Databases in this MongoDB instance:**\n\n" + "\n".join(f"- `{db}`" for db in db_list),
-                parse_mode=ParseMode.MARKDOWN
+                "**✅ Databases in the old MongoDB instance:**\n\n" + "\n".join(f"- `{db}`" for db in db_list),
+                parse_mode="markdown"
             )
         else:
-            await message.reply_text("**❌ No databases found in this MongoDB instance.**", parse_mode=ParseMode.MARKDOWN)
+            await message.reply_text("**❌ No databases found in the old MongoDB instance.**", parse_mode="markdown")
     except Exception as e:
-        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode=ParseMode.MARKDOWN)
+        await message.reply_text(f"**❌ An error occurred:** `{str(e)}`", parse_mode="markdown")
     finally:
-        old_client.close()
+        if old_client:
+            old_client.close()  # Ensure this is only called if old_client was created
+
 
 @app.on_message(filters.command("transfer"))
 async def transfer_data(client, message):

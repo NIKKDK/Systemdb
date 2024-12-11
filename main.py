@@ -11,7 +11,12 @@ BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
 
 
 # Pyrogram Client
-app = Client("MongoDB", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+app = Client(
+    "MongoDB", 
+    api_id=API_ID, 
+    api_hash=API_HASH, 
+    bot_token=BOT_TOKEN
+)
 
 # Temporary storage for URIs (per user)
 user_data = {}
@@ -38,10 +43,11 @@ async def start(client, message):
     await message.reply_text(
         "**👋 Welcome to the MongoDB Transfer Bot!**\n\n"
         "**Commands:**\n"
-        "/set_old `<old_mongo_uri>` - Set old MongoDB URI\n"
-        "/set_new `<new_mongo_uri>` - Set new MongoDB URI\n"
+        "/setold `<old_mongo_uri>` - Set old MongoDB URI\n"
+        "/setnew `<new_mongo_uri>` - Set new MongoDB URI\n"
+        "/setold `<old_mongo_uri>` - To check how many databases this mongo has\n"
         "/transfer - Start transferring data\n"
-        "/listalldbs - List all databases in the old MongoDB instance\n"
+        "/listalldb - List all databases in the old MongoDB instance\n"
         "/status - Check bot status\n"
         "/ping - Get system info and bot uptime",
         parse_mode=ParseMode.MARKDOWN

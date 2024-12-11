@@ -7,6 +7,7 @@ API_ID = "12380656"
 API_HASH = "d927c13beaaf5110f25c505b7c071273"
 BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
 
+
 # Pyrogram Client
 bot = Client("mongo_transfer_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -17,10 +18,15 @@ user_data = {}
 async def start(client, message):
     await message.reply_text(
         "👋 Welcome to the MongoDB Transfer Bot!\n\n"
-        "Send `/set_old <old_mongo_uri>` to provide the URI for the old MongoDB instance."
+        "Commands:\n"
+        "/set_old <old_mongo_uri> - Set old MongoDB URI\n"
+        "/set_new <new_mongo_uri> - Set new MongoDB URI\n"
+        "/transfer - Start transferring data\n"
+        "/listalldbs - List all databases in the old MongoDB instance\n"
+        "/status - Check bot status"
     )
 
-@bot.on_message(filters.command("setold") & filters.private)
+@bot.on_message(filters.command("set_old") & filters.private)
 async def set_old(client, message):
     try:
         if len(message.command) < 2:
@@ -35,7 +41,7 @@ async def set_old(client, message):
     except Exception as e:
         await message.reply_text(f"❌ An error occurred: {str(e)}")
 
-@bot.on_message(filters.command("setnew") & filters.private)
+@bot.on_message(filters.command("set_new") & filters.private)
 async def set_new(client, message):
     try:
         if len(message.command) < 2:
@@ -51,6 +57,32 @@ async def set_new(client, message):
         await message.reply_text("✅ New MongoDB URI saved! Send `/transfer` to start the migration.")
     except Exception as e:
         await message.reply_text(f"❌ An error occurred: {str(e)}")
+
+@bot.on_message(filters.command("listalldbs") & filters.private)
+async def list_all_dbs(client, message):
+    try:
+        user_id = message.from_user.id
+        if user_id not in user_data or "old_uri" not in user_data[user_id]:
+            await message.reply_text("❌ Please set the old MongoDB URI first using `/set_old`.")
+            return
+
+        old_uri = user_data[user_id]["old_uri"]
+
+        # Connect to MongoDB
+        old_client = MongoClient(old_uri)
+        db_list = old_client.list_database_names()
+
+        # Filter out system databases
+        db_list = [db for db in db_list if db not in ["admin", "config", "local"]]
+
+        if db_list:
+            await message.reply_text(f"✅ Databases in the old MongoDB instance:\n\n" + "\n".join(f"- {db}" for db in db_list))
+        else:
+            await message.reply_text("❌ No databases found in the old MongoDB instance.")
+    except Exception as e:
+        await message.reply_text(f"❌ An error occurred: {str(e)}")
+    finally:
+        old_client.close()
 
 @bot.on_message(filters.command("transfer") & filters.private)
 async def transfer_data(client, message):

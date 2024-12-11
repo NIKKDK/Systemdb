@@ -60,8 +60,8 @@ async def start(client, message):
         "/transfer - Start transferring data\n"
         "/listalldb - List all databases in the old MongoDB instance\n"
         "/status - Check bot status\n"
-        "/ping - Get system info and bot uptime",
-        "/clean - This cmd can delete all your entire data which is stored in your mongo db database", 
+        "/ping - Get system info and bot uptime\n",
+        "/clean - This cmd can delete all your entire data which is stored in your mongo db database\n", 
         parse_mode=ParseMode.MARKDOWN
     )
 

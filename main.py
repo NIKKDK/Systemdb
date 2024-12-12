@@ -3,33 +3,25 @@ import time
 import json
 import psutil
 import asyncio
+import logging
 from bson import ObjectId
 from datetime import datetime
 from pyrogram.errors import FloodWait
-from pyrogram import Client, filters, idle
+from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import OperationFailure
 from config import *
+import config
+import pymongo
+from config import *
+import motor.motor_asyncio
+from pyrogram.types import Message
+from YukkiMusic import LOGGER, app
 
 
-loop = asyncio.get_event_loop()
 
-
-# Telegram Bot Credentials
-API_ID = "12380656"
-API_HASH = "d927c13beaaf5110f25c505b7c071273"
-BOT_TOKEN = "8007837520:AAGIpK0CdS6U8gsx3a-m491ZFO8SurC4a7k"
-
-
-# Pyrogram Client
-app = Client(
-    "MongoDB", 
-    api_id=API_ID, 
-    api_hash=API_HASH, 
-    bot_token=BOT_TOKEN
-)
 
 # Temporary storage for URIs (per user)
 user_data = {}
@@ -37,26 +29,6 @@ user_data = {}
 # Start time for bot uptime tracking
 bot_start_time = time.time()
 
-
-async def main():
-    cpu_usage, memory_usage = await get_system_info()
-    await get_uptime()
-    await app.start()
-    await idle() 
-
-# Helper function to format bot uptime
-async def get_uptime():
-    uptime_seconds = int(time.time() - bot_start_time)
-    hours, remainder = divmod(uptime_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return f"{hours}h {minutes}m {seconds}s"
-
-# Helper function to get system info
-async def get_system_info():
-    # Get system CPU usage and memory info
-    cpu_usage = psutil.cpu_percent(interval=1)
-    memory = psutil.virtual_memory()
-    return cpu_usage, memory.percent
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -394,6 +366,160 @@ async def check_sping(client, message):
     await m.edit(f"**🤖 Pinged...!!\nLatency:** `{ms}` ms")
 
 
-if __name__ == "__main__":
-    print("Bot is starting...")
-    loop.run_until_complete(main())
+
+
+# MongoDB connection details
+async def backup_all_databases(mongo_url: str):
+    # Connect to MongoDB using the provided URL
+    client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
+
+    # Get the list of all databases in the MongoDB server
+    db_names = await client.list_database_names()
+
+    if not db_names:
+        return "No databases found on the server."
+
+    all_data = {}
+
+    for db_name in db_names:
+        try:
+            # Connect to the database
+            db = client[db_name]
+
+            # Get all collection names from the database
+            collection_names = await db.list_collection_names()
+
+            # Skip this database if no collections are found
+            if not collection_names:
+                continue
+
+            db_data = {}
+
+            for collection in collection_names:
+                # Fetch all documents from the collection
+                collection_data = await db[collection].find().to_list(length=None)
+
+                # Add collection data to the database's data
+                if collection_data:
+                    db_data[collection] = collection_data
+
+            if db_data:
+                all_data[db_name] = db_data
+
+        except Exception as e:
+            print(f"Error backing up database {db_name}: {str(e)}")
+
+    # If no data was collected, return an error message
+    if not all_data:
+        return "Error: No data was backed up."
+
+    # Write all data to the JSON file
+    temp_filename = f"backup_all_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    try:
+        with open(temp_filename, 'w') as f:
+            json.dump(all_data, f, default=str, indent=4)
+        return temp_filename
+    except Exception as e:
+        return f"Error creating the backup file: {str(e)}"
+
+
+@app.on_message(filters.command("backup"))
+async def backup_handler(client: Client, message: Message):
+    if len(message.command) < 2:
+        await message.reply("Please provide the MongoDB URL after /backup command.")
+        return
+    
+    mongo_url = message.command[1]
+
+    # Send a text message indicating that the backup process has started
+    await message.reply("Backup process has started... This may take some time depending on the size of your databases.")
+
+    # Call the backup function for all databases
+    backup_file = await backup_all_databases(mongo_url)
+
+    if isinstance(backup_file, str) and backup_file.endswith('.json'):
+        # Send the backup file to the user
+        try:
+            # Ensure the file exists before sending
+            if os.path.exists(backup_file) and os.path.getsize(backup_file) > 0:
+                await message.reply_document(document=backup_file)
+                # Clean up the temporary backup file after sending it
+                os.remove(backup_file)
+                await message.reply("Backup completed successfully.")
+            else:
+                await message.reply("Error: The backup file is empty or could not be found.")
+        except Exception as e:
+            await message.reply(f"Error sending backup: {str(e)}")
+    else:
+        await message.reply(backup_file)  # In case of error message
+
+
+# Store MongoDB URI dynamically (user input)
+user_mongo_uri = None
+
+@app.on_message(filters.command("restore"))
+async def restore_command(client: Client, message: Message):
+    global user_mongo_uri
+    
+    # Ask the user for the MongoDB URI (if not set)
+    if not user_mongo_uri:
+        await message.reply("Please provide your MongoDB URI to start restoring data. Format: `mongodb+srv://username:password@host:port/database_name`")
+    else:
+        # Notify the user to send the file to restore data
+        await message.reply("Please send me the file to restore the data.")
+
+@app.on_message(filters.text)
+async def set_mongo_uri(client: Client, message: Message):
+    global user_mongo_uri
+    
+    # Store the MongoDB URI from user input
+    if not user_mongo_uri and message.text.startswith("mongodb+srv://"):
+        user_mongo_uri = message.text
+        await message.reply(f"MongoDB URI set to {user_mongo_uri}. Now send the file to restore data.")
+    else:
+        # Handle other commands or unexpected inputs
+        await message.reply("Invalid MongoDB URI. Please provide a valid MongoDB URI starting with `mongodb+srv://`.")
+
+@app.on_message(filters.document)
+async def handle_file(client: Client, message: Message):
+    global user_mongo_uri
+    
+    if message.document:
+        try:
+            if not user_mongo_uri:
+                await message.reply("Please provide the MongoDB URI first using the /restore command.")
+                return
+            
+            client_mongo = pymongo.MongoClient(user_mongo_uri)
+
+            file_id = message.document.file_id
+            downloaded_file = await message.download()
+
+            with open(downloaded_file, "r") as file:
+                data = json.load(file)
+
+            if isinstance(data, dict):
+                for db_name, collections_data in data.items():
+                    if db_name in ['local', 'admin', 'config']:
+                        logger.info(f"Skipping system database: {db_name}")
+                        continue
+
+                    db = client_mongo[db_name]
+
+                    for collection_name, collection_data in collections_data.items():
+                        collection = db[collection_name]
+                        if isinstance(collection_data, list):
+                            try:
+                                collection.insert_many(collection_data, ordered=False)  # Skip duplicates
+                                logger.info(f"Inserted documents into {db_name}.{collection_name}")
+                            except pymongo.errors.BulkWriteError as bwe:
+                                logger.warning(f"Duplicate documents skipped for {db_name}.{collection_name}: {bwe.details}")
+                        else:
+                            logger.warning(f"Skipping invalid data format for {db_name}.{collection_name}")
+                await message.reply("Data restored successfully with duplicates skipped.")
+            else:
+                await message.reply("The file format is incorrect. Please provide a valid JSON file.")
+
+        except Exception as e:
+            logger.error(f"Error during file processing: {e}")
+            await message.reply(f"An error occurred while processing the file: {e}")

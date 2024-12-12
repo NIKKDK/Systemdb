@@ -363,7 +363,7 @@ async def handle_file(client: Client, message: Message):
             if isinstance(data, dict):
                 for db_name, collections_data in data.items():
                     if db_name in ['local', 'admin', 'config']:
-                        logger.info(f"Skipping system database: {db_name}")
+                        LOGGER.info(f"Skipping system database: {db_name}")
                         continue
 
                     db = client_mongo[db_name]
@@ -373,15 +373,15 @@ async def handle_file(client: Client, message: Message):
                         if isinstance(collection_data, list):
                             try:
                                 collection.insert_many(collection_data, ordered=False)  # Skip duplicates
-                                logger.info(f"Inserted documents into {db_name}.{collection_name}")
+                                LOGGER.info(f"Inserted documents into {db_name}.{collection_name}")
                             except pymongo.errors.BulkWriteError as bwe:
-                                logger.warning(f"Duplicate documents skipped for {db_name}.{collection_name}: {bwe.details}")
+                                LOGGER.warning(f"Duplicate documents skipped for {db_name}.{collection_name}: {bwe.details}")
                         else:
-                            logger.warning(f"Skipping invalid data format for {db_name}.{collection_name}")
+                            LOGGER.warning(f"Skipping invalid data format for {db_name}.{collection_name}")
                 await message.reply("Data restored successfully with duplicates skipped.")
             else:
                 await message.reply("The file format is incorrect. Please provide a valid JSON file.")
 
         except Exception as e:
-            logger.error(f"Error during file processing: {e}")
+            LOGGER.error(f"Error during file processing: {e}")
             await message.reply(f"An error occurred while processing the file: {e}")
